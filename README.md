@@ -58,21 +58,18 @@ Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapıs
 
 ### Takım ve Maç Seçim Ekranları
 
-| Takım Seçimi | Takım Detayı |
-|:----------:|:----------:|
-| ![Takım Seçimi](projectimages/main1.png) | ![Takım Detayı](projectimages/main2.png) |
+![Takım Seçimi](projectimages/main1.png)
+![Takım Detayı](projectimages/main2.png)
 
 ### Maç Detayları ve Anlatım Akışı
 
-| Scoreboard | Maç Anlatımı (Bölüm 1) | Maç Anlatımı (Bölüm 2) |
-|:----------:|:-----------------------:|:-----------------------:|
-| ![Maç Scoreboard](projectimages/main3.png) | ![Maç Anlatımı 1](projectimages/main4.png) | ![Maç Anlatımı 2](projectimages/main5.png) |
+![Maç Scoreboard](projectimages/main3.png)
+![Maç Anlatımı 1](projectimages/main4.png)
+![Maç Anlatımı 2](projectimages/main5.png)
 
 ### Örnek Bir Maç Akışı
 
-| Farklı Maç Örneği |
-|:-------------------:|
-| ![Farklı Maç](projectimages/main6.png) |
+![Farklı Maç](projectimages/main6.png)
 
 ---
 
@@ -80,8 +77,6 @@ Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapıs
 
 EF Core ve Dapper ile yapılan aynı sorguların performans karşılaştırmasını gösteren görsel aşağıdadır:
 
-| EF Core vs Dapper Performans Kıyaslaması |
-|:----------------------------------------:|
-| ![EF Core vs Dapper Kıyaslama](projectimages/efvsdapper1.png) |
+![EF Core vs Dapper Kıyaslama](projectimages/efvsdapper1.png)
 
 ---
