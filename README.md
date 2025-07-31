@@ -19,11 +19,7 @@ Proje, gerçek NBA maç verilerini içeren geniş bir veri tabanını kullanmakt
 -   **Ana Veri Tablosu:** `play_by_play`
     * Bu tablo, maçların top-topa (play-by-play) anlarını içerir ve yaklaşık **13 milyon satır veri** ile projenin büyük veri işleme kapasitesini test etmek için önemli bir kaynaktır.
 
-### Veritabanı Şeması
 
-Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapısını görebilirsiniz:
-
-![Database Diagram](projectimages/diagram.png)
 
 ---
 
@@ -56,14 +52,18 @@ Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapıs
 
 ## 📸 Uygulama Görselleri
 
-### Takım ve Maç Seçim Ekranları
+### Takım Seçim Ekranları
 
 ![Takım Seçimi](projectimages/main1.png)
+
+### Maç Takvimi ve Takım Detayı
 ![Takım Detayı](projectimages/main2.png)
 
-### Maç Detayları ve Anlatım Akışı
+### Maç Detayları  
 
 ![Maç Scoreboard](projectimages/main3.png)
+
+### Anlatım Akışı
 ![Maç Anlatımı 1](projectimages/main4.png)
 ![Maç Anlatımı 2](projectimages/main5.png)
 
@@ -72,6 +72,12 @@ Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapıs
 ![Farklı Maç](projectimages/main6.png)
 
 ---
+
+### Veritabanı Şeması
+
+Aşağıdaki diyagramda kullanılan veritabanı tablolarının ilişkisel yapısını görebilirsiniz:
+
+![Database Diagram](projectimages/diagram.png)
 
 ## 📈 Performans Testi Sonuçları
 
