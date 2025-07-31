@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NBA Admin Panel</title>
+    
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="~/css/admin-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nba-animations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/theme-fix.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/team-selection.css" asp-append-version="true" />
+</head>
+<body id="page-top">
+    
+    <div id="wrapper">
+        
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="@(Url.Action("Index", "Admin"))">>
+                <div class="sidebar-brand-icon rotate-n-15">
+                    <i class="fas fa-basketball-ball"></i>
+                </div>
+                <div class="sidebar-brand-text mx-3">NBA <sup>Admin</sup></div>
+            </a>
+
+            
+            <hr class="sidebar-divider my-0">
+
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="@(Url.Action("Index", "Admin"))">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <hr class="sidebar-divider">
+
+            
+            <div class="sidebar-heading">
+                NBA Data
+            </div>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-users"></i>
+                    <span>Players</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="@Url.Action("Teams", "Admin")">
+                    <i class="fas fa-fw fa-flag"></i>
+                    <span>Teams</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-gamepad"></i>
+                    <span>Games</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-chart-area"></i>
+                    <span>Statistics</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="/Performance">
+                    <i class="fas fa-fw fa-chart-line"></i>
+                    <span>Performance</span>
+                    <div class="basketball-indicator">
+                        <i class="fas fa-basketball-ball"></i>
+                    </div>
+                </a>
+            </li>
+
+            
+            <hr class="sidebar-divider d-none d-md-block">
+
+            
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+        </ul>
+        
+
+        
+        <div id="content-wrapper" class="d-flex flex-column">
+            
+            <div id="content">
+                
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+                    
+                    <ul class="navbar-nav ms-auto">
+                        
+                        <li class="nav-item me-4">
+                            <div class="d-flex align-items-center">
+                                <span class="text-muted small me-3">Data Access:</span>
+                                <div class="data-toggle-container">
+                                    <div class="toggle-switch" id="dataAccessToggle">
+                                        <input type="checkbox" id="toggleInput" class="toggle-input">
+                                        <label for="toggleInput" class="toggle-label">
+                                            <span class="toggle-option left">
+                                                <i class="fas fa-layer-group me-1"></i>EF Core
+                                            </span>
+                                            <span class="toggle-option right">
+                                                <i class="fas fa-bolt me-1"></i>Dapper
+                                            </span>
+                                            <div class="toggle-slider"></div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                
+
+                
+                <div class="container-fluid">
+
+                    @RenderBody()
+                </div>
+                
+            </div>
+            
+
+            
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; NBA Admin Panel @DateTime.Now.Year</span>
+                    </div>
+                </div>
+            </footer>
+            
+        </div>
+        
+    </div>
+    
+
+    
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="#">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="~/js/admin-theme.js" asp-append-version="true"></script>
+    <script src="~/js/nba-theme-toggle.js" asp-append-version="true"></script>
+    <script src="~/js/team-selection.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

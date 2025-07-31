@@ -1,0 +1,657 @@
+@model DapperKaggleProject.Models.GameDetailsViewModel
+@{
+    ViewData["Title"] = "Game Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="digital-scoreboard">
+                <div class="scoreboard-container">
+                    
+                    <div class="team-section away-section">
+                        <div class="team-label">AWAY</div>
+                        <div class="team-logo-container">
+                            <img src="@Model.AwayTeamLogoPath" alt="@Model.AwayTeamAbbrev" class="scoreboard-logo" />
+                        </div>
+                        <div class="team-score-display">@Convert.ToInt32(Model.AwayScore)</div>
+                    </div>
+                    
+                    
+                    <div class="center-section">
+                        <div class="time-label">TIME</div>
+                        <div class="time-display">FINAL</div>
+                        <div class="quarter-section">
+                            <div class="quarter-label">QTR</div>
+                            <div class="quarter-display">
+                                @if (Model.MaxPeriod > 4)
+                                {
+                                    @("OT" + (Model.MaxPeriod - 4))
+                                }
+                                else
+                                {
+                                    @("Q" + Model.MaxPeriod)
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="team-section home-section">
+                        <div class="team-label">HOME</div>
+                        <div class="team-logo-container">
+                            <img src="@Model.HomeTeamLogoPath" alt="@Model.HomeTeamAbbrev" class="scoreboard-logo" />
+                        </div>
+                        <div class="team-score-display">@Convert.ToInt32(Model.HomeScore)</div>
+                    </div>
+                </div>
+                
+                
+                <div class="game-info-section">
+                    <div class="game-date">
+                        <i class="fas fa-calendar-alt me-2"></i>@Model.GameDate
+                    </div>
+                    <div class="team-names">
+                        @Model.AwayTeamCity @Model.AwayTeamNickname vs @Model.HomeTeamCity @Model.HomeTeamNickname
+                    </div>
+                </div>
+                
+                
+                <div class="scoreboard-nav">
+                    <a href="@Url.Action("Teams", "Admin")" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left"></i> Back to Calendar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-primary">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-primary">Total Events</h5>
+                    <h3 class="text-primary">@Model.TotalEvents</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-success">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-success">Scoring Plays</h5>
+                    <h3 class="text-success">@Model.ScoringEvents.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-warning">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-warning">Turnovers</h5>
+                    <h3 class="text-warning">@Model.TurnoversEvents.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-danger">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">Fouls</h5>
+                    <h3 class="text-danger">@Model.FoulEvents.Count</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Jump to Period</h5>
+                    <div class="btn-group" role="group">
+                        @for (int period = 1; period <= Model.MaxPeriod; period++)
+                        {
+                            var eventCount = Model.EventsByPeriod.ContainsKey(period) ? Model.EventsByPeriod[period].Count : 0;
+                            <button type="button" class="btn btn-outline-primary period-btn" data-period="@period">
+                                @Model.GetPeriodName(period) (@eventCount)
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-12">
+            @foreach (var periodGroup in Model.EventsByPeriod.OrderBy(kv => kv.Key))
+            {
+                <div class="card mb-4 period-section" id="period-@periodGroup.Key">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-basketball-ball"></i>
+                            @Model.GetPeriodName(periodGroup.Key)
+                            <span class="badge bg-light text-dark ms-2">@periodGroup.Value.Count events</span>
+                        </h4>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="play-by-play-container">
+                            @foreach (var gameEvent in periodGroup.Value.OrderBy(e => e.EventNum))
+                            {
+                                var isHomeTeamEvent = !string.IsNullOrEmpty(gameEvent.Player1TeamAbbreviation) && 
+                                                     string.Equals(gameEvent.Player1TeamAbbreviation, Model.HomeTeamAbbrev, StringComparison.OrdinalIgnoreCase);
+                                var isAwayTeamEvent = !string.IsNullOrEmpty(gameEvent.Player1TeamAbbreviation) && 
+                                                     string.Equals(gameEvent.Player1TeamAbbreviation, Model.AwayTeamAbbrev, StringComparison.OrdinalIgnoreCase);
+                                var isNeutralEvent = !isHomeTeamEvent && !isAwayTeamEvent;
+                                
+                                <div class="play-by-play-row @(isHomeTeamEvent ? "home-event" : isAwayTeamEvent ? "away-event" : "neutral-event")">
+                                    
+                                    <div class="away-action">
+                                        @if (isAwayTeamEvent)
+                                        {
+                                            <div class="event-content away-content">
+                                                <div class="event-header">
+                                                    <span class="event-time">@gameEvent.PcTimeString</span>
+                                                    <i class="@gameEvent.EventTypeIcon event-icon"></i>
+                                                </div>
+                                                <div class="event-description">@gameEvent.EventDescription</div>
+                                                @if (!string.IsNullOrEmpty(gameEvent.Player1Name))
+                                                {
+                                                    <div class="player-info">
+                                                        <i class="fas fa-user me-1"></i>@gameEvent.Player1Name
+                                                        @if (!string.IsNullOrEmpty(gameEvent.Player2Name))
+                                                        {
+                                                            <span class="text-muted"> → @gameEvent.Player2Name</span>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    
+                                    <div class="center-score">
+                                        @if (!string.IsNullOrEmpty(gameEvent.Score))
+                                        {
+                                            <span class="score-badge">@gameEvent.Score</span>
+                                        }
+                                        @if (isNeutralEvent)
+                                        {
+                                            <div class="neutral-event-content">
+                                                <div class="event-header">
+                                                    <span class="event-time">@gameEvent.PcTimeString</span>
+                                                    <i class="@gameEvent.EventTypeIcon event-icon"></i>
+                                                </div>
+                                                <div class="event-description">@gameEvent.EventDescription</div>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    
+                                    <div class="home-action">
+                                        @if (isHomeTeamEvent)
+                                        {
+                                            <div class="event-content home-content">
+                                                <div class="event-header">
+                                                    <i class="@gameEvent.EventTypeIcon event-icon"></i>
+                                                    <span class="event-time">@gameEvent.PcTimeString</span>
+                                                </div>
+                                                <div class="event-description">@gameEvent.EventDescription</div>
+                                                @if (!string.IsNullOrEmpty(gameEvent.Player1Name))
+                                                {
+                                                    <div class="player-info">
+                                                        @gameEvent.Player1Name<i class="fas fa-user ms-1"></i>
+                                                        @if (!string.IsNullOrEmpty(gameEvent.Player2Name))
+                                                        {
+                                                            <span class="text-muted">@gameEvent.Player2Name → </span>
+                                                        }
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Digital Scoreboard Styles */
+    .digital-scoreboard {
+        background: #000;
+        border: 4px solid #ccc;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 800px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        font-family: 'Courier New', monospace;
+    }
+
+    .scoreboard-container {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 30px;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .team-section {
+        text-align: center;
+        color: #fff;
+    }
+
+    .team-label {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 15px;
+        letter-spacing: 2px;
+    }
+
+    .team-logo-container {
+        width: 100px;
+        height: 100px;
+        background: #333;
+        border: 2px solid #666;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px auto;
+        position: relative;
+    }
+
+    .scoreboard-logo {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+    }
+
+    .team-score-display {
+        font-size: 4em;
+        font-weight: bold;
+        color: #ff0000;
+        text-shadow: 0 0 10px #ff0000;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 8px;
+        padding: 15px;
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .center-section {
+        text-align: center;
+        color: #fff;
+        padding: 0 20px;
+    }
+
+    .time-label {
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+    }
+
+    .time-display {
+        font-size: 2.5em;
+        font-weight: bold;
+        color: #00ff00;
+        text-shadow: 0 0 10px #00ff00;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 8px;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        min-width: 100px;
+    }
+
+    .quarter-section {
+        margin-top: 15px;
+    }
+
+    .quarter-label {
+        font-size: 1em;
+        font-weight: bold;
+        margin-bottom: 5px;
+        letter-spacing: 2px;
+    }
+
+    .quarter-display {
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #ffff00;
+        text-shadow: 0 0 8px #ffff00;
+        background: #111;
+        border: 2px solid #333;
+        border-radius: 6px;
+        padding: 8px 15px;
+        min-width: 60px;
+        margin: 0 auto;
+    }
+
+    .game-info-section {
+        text-align: center;
+        color: #ccc;
+        margin-bottom: 20px;
+        border-top: 1px solid #333;
+        padding-top: 15px;
+    }
+
+    .game-date {
+        font-size: 1.1em;
+        margin-bottom: 8px;
+    }
+
+    .team-names {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .scoreboard-nav {
+        text-align: center;
+        border-top: 1px solid #333;
+        padding-top: 15px;
+    }
+
+    .scoreboard-nav .btn {
+        background: #333;
+        border-color: #666;
+        color: #fff;
+        font-family: inherit;
+        font-weight: bold;
+        padding: 10px 20px;
+    }
+
+    .scoreboard-nav .btn:hover {
+        background: #555;
+        border-color: #888;
+        color: #fff;
+    }
+
+    /* Play-by-Play Styles */
+    .play-by-play-container {
+        padding: 15px;
+    }
+
+    .play-by-play-row {
+        display: grid;
+        grid-template-columns: 1fr 120px 1fr;
+        gap: 15px;
+        margin-bottom: 15px;
+        min-height: 60px;
+        align-items: center;
+    }
+
+    .away-action {
+        text-align: right;
+        padding-right: 15px;
+    }
+
+    .home-action {
+        text-align: left;
+        padding-left: 15px;
+    }
+
+    .center-score {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60px;
+    }
+
+    .event-content {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 12px 15px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        position: relative;
+        max-width: 400px;
+    }
+
+    .away-content {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border-left: 4px solid #2196f3;
+        margin-left: auto;
+    }
+
+    .home-content {
+        background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+        border-right: 4px solid #9c27b0;
+        margin-right: auto;
+    }
+
+    .event-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .away-content .event-header {
+        justify-content: flex-end;
+    }
+
+    .home-content .event-header {
+        justify-content: flex-start;
+    }
+
+    .event-time {
+        font-family: 'Courier New', monospace;
+        background: rgba(0,0,0,0.1);
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.85em;
+        font-weight: bold;
+    }
+
+    .event-icon {
+        margin: 0 8px;
+        font-size: 1.1em;
+    }
+
+    .event-description {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 5px;
+        font-size: 0.95em;
+    }
+
+    .player-info {
+        font-size: 0.85em;
+        color: #666;
+        font-style: italic;
+    }
+
+    .score-badge {
+        background: #343a40;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .neutral-event-content {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .neutral-event-content .event-header {
+        justify-content: center;
+        margin-bottom: 5px;
+    }
+
+    .neutral-event-content .event-description {
+        font-size: 0.9em;
+        color: #856404;
+    }
+
+    /* Event Type Colors */
+    .home-event .event-icon {
+        color: #9c27b0;
+    }
+
+    .away-event .event-icon {
+        color: #2196f3;
+    }
+
+    .neutral-event .event-icon {
+        color: #ff9800;
+    }
+
+    /* Statistics Cards */
+    .card.border-primary { border-width: 2px !important; }
+    .card.border-success { border-width: 2px !important; }
+    .card.border-warning { border-width: 2px !important; }
+    .card.border-danger { border-width: 2px !important; }
+
+    /* Period Navigation */
+    .period-btn {
+        margin-right: 10px;
+        margin-bottom: 5px;
+        border-radius: 20px;
+        padding: 8px 16px;
+    }
+
+    .period-btn.active {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    /* Period Sections */
+    .period-section {
+        scroll-margin-top: 100px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+    }
+
+    .period-section .card-header {
+        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    /* Mobile Responsive */
+    @@media (max-width: 768px) {
+        .scoreboard-container {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .center-section {
+            order: -1;
+        }
+
+        .team-score-display {
+            font-size: 3em;
+        }
+
+        .time-display {
+            font-size: 2em;
+        }
+
+        .play-by-play-row {
+            grid-template-columns: 1fr;
+            gap: 10px;
+            text-align: center;
+        }
+
+        .away-action, .home-action {
+            text-align: center;
+            padding: 0;
+        }
+
+        .event-content {
+            margin: 0 auto;
+            max-width: 100%;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .digital-scoreboard {
+            padding: 15px;
+        }
+
+        .team-score-display {
+            font-size: 2.5em;
+            min-width: 100px;
+        }
+
+        .time-display {
+            font-size: 1.8em;
+        }
+
+        .team-logo-container {
+            width: 80px;
+            height: 80px;
+        }
+
+        .scoreboard-logo {
+            width: 60px;
+            height: 60px;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Period navigation
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const period = this.dataset.period;
+                const element = document.getElementById('period-' + period);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Update active button
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Auto-highlight current period when scrolling
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const period = entry.target.id.replace('period-', '');
+                    document.querySelectorAll('.period-btn').forEach(btn => {
+                        btn.classList.toggle('active', btn.dataset.period === period);
+                    });
+                }
+            });
+        }, { 
+            threshold: 0.3,
+            rootMargin: '-100px 0px -50% 0px'
+        });
+
+        document.querySelectorAll('.period-section').forEach(section => {
+            observer.observe(section);
+        });
+    });
+</script>
+

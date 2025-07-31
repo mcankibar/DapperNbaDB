@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Performance Test";
+    var result = ViewBag.PerformanceResult as DapperKaggleProject.Services.PerformanceComparisonService.PerformanceResult;
+}
+
+<h2>Performance Test Result</h2>
+
+@if (result != null)
+{
+    <table class="table table-bordered">
+        <tr>
+            <th>Test Name</th>
+            <td>@result.TestName</td>
+        </tr>
+        <tr>
+            <th>EF Core Time (ms)</th>
+            <td>@result.EfCoreTimeMs</td>
+        </tr>
+        <tr>
+            <th>Dapper Time (ms)</th>
+            <td>@result.DapperTimeMs</td>
+        </tr>
+        <tr>
+            <th>Record Count</th>
+            <td>@result.RecordCount</td>
+        </tr>
+        <tr>
+            <th>Winner</th>
+            <td>@result.Winner</td>
+        </tr>
+        <tr>
+            <th>Time Difference (ms)</th>
+            <td>@result.TimeDifferenceMs</td>
+        </tr>
+        <tr>
+            <th>Performance Ratio</th>
+            <td>@result.PerformanceRatio</td>
+        </tr>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning">No performance result available.</div>
+}
+

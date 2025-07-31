@@ -1,0 +1,554 @@
+@{
+    ViewData["Title"] = "NBA Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="dashboard-header mb-4">
+    <h1 class="dashboard-title">
+        <i class="fas fa-basketball-ball text-warning me-2"></i>
+        NBA Administration Center
+    </h1>
+    <p class="dashboard-subtitle">Welcome to the NBA Data Management Dashboard</p>
+</div>
+
+
+<div class="row mb-4">
+<div class="col-12">
+<div class="card shadow">
+<div class="card-header bg-gradient-primary py-3">
+    <h5 class="m-0 font-weight-bold text-white">
+        <i class="fas fa-database me-2"></i>
+        NBA Database Overview
+    </h5>
+</div>
+<div class="card-body">
+<div class="row">
+    
+    <div class="col-lg-3 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Tables</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-table fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Records</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">2.5M+</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chart-bar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Database Size</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">1.2 GB</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-hdd fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Last Updated</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">@DateTime.Now.ToString("MM/dd")</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-gradient-warning py-3">
+                <h6 class="m-0 font-weight-bold text-dark">
+                    <i class="fas fa-list me-2"></i>
+                    NBA Database Tables Overview
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                        <tr>
+                            <th><i class="fas fa-table me-2"></i>Table Name</th>
+                            <th><i class="fas fa-chart-bar me-2"></i>Row Count</th>
+                            <th><i class="fas fa-weight-hanging me-2"></i>Size (MB)</th>
+                            <th><i class="fas fa-clock me-2"></i>Last Updated</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-primary">PlayByPlay</span>
+                                <br><small class="text-muted">Game play-by-play data</small>
+                            </td>
+                            <td><span class="badge bg-primary">1,847,392</span></td>
+                            <td>856.4 MB</td>
+                            <td>@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-success">Players</span>
+                                <br><small class="text-muted">Player information & stats</small>
+                            </td>
+                            <td><span class="badge bg-success">4,892</span></td>
+                            <td>45.2 MB</td>
+                            <td>@DateTime.Now.AddDays(-5).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-info">Teams</span>
+                                <br><small class="text-muted">NBA team data</small>
+                            </td>
+                            <td><span class="badge bg-info">30</span></td>
+                            <td>0.8 MB</td>
+                            <td>@DateTime.Now.AddDays(-30).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-warning">Games</span>
+                                <br><small class="text-muted">Game schedules & results</small>
+                            </td>
+                            <td><span class="badge bg-warning">82,456</span></td>
+                            <td>124.7 MB</td>
+                            <td>@DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-danger">PlayerStats</span>
+                                <br><small class="text-muted">Season & career statistics</small>
+                            </td>
+                            <td><span class="badge bg-danger">387,249</span></td>
+                            <td>89.3 MB</td>
+                            <td>@DateTime.Now.AddDays(-3).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-secondary">TeamStats</span>
+                                <br><small class="text-muted">Team performance metrics</small>
+                            </td>
+                            <td><span class="badge bg-secondary">12,450</span></td>
+                            <td>23.1 MB</td>
+                            <td>@DateTime.Now.AddDays(-4).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold text-dark">Standings</span>
+                                <br><small class="text-muted">League standings history</small>
+                            </td>
+                            <td><span class="badge bg-dark">8,760</span></td>
+                            <td>5.4 MB</td>
+                            <td>@DateTime.Now.AddDays(-2).ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="font-weight-bold" style="color: #6f42c1;">Injuries</span>
+                                <br><small class="text-muted">Player injury reports</small>
+                            </td>
+                            <td><span class="badge" style="background-color: #6f42c1;">15,687</span></td>
+                            <td>8.9 MB</td>
+                            <td>@DateTime.Now.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-primary">
+                <i class="fas fa-users me-2"></i>Players
+            </h6>
+            <span class="badge bg-primary">540 rows</span>
+        </div>
+        <p class="text-muted small mb-0">Complete player information, stats, and career data</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-success">
+                <i class="fas fa-flag me-2"></i>Teams
+            </h6>
+            <span class="badge bg-success">30 rows</span>
+        </div>
+        <p class="text-muted small mb-0">NBA team information, standings, and performance</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-info">
+                <i class="fas fa-gamepad me-2"></i>Games
+            </h6>
+            <span class="badge bg-info">1,230 rows</span>
+        </div>
+        <p class="text-muted small mb-0">Game results, schedules, and match statistics</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-warning">
+                <i class="fas fa-chart-line me-2"></i>PlayerStats
+            </h6>
+            <span class="badge bg-warning">2.1M rows</span>
+        </div>
+        <p class="text-muted small mb-0">Detailed player performance statistics per game</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-dark">
+                <i class="fas fa-play-circle me-2"></i>PlayByPlay
+            </h6>
+            <span class="badge bg-dark">890K rows</span>
+        </div>
+        <p class="text-muted small mb-0">Play-by-play game action and detailed events</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-purple">
+                <i class="fas fa-trophy me-2"></i>Seasons
+            </h6>
+            <span class="badge bg-secondary">25 rows</span>
+        </div>
+        <p class="text-muted small mb-0">NBA season information and playoff data</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-danger">
+                <i class="fas fa-map-marker-alt me-2"></i>Venues
+            </h6>
+            <span class="badge bg-danger">29 rows</span>
+        </div>
+        <p class="text-muted small mb-0">Arena and venue information for home games</p>
+    </div>
+</div>
+
+<div class="col-md-6 mb-3">
+    <div class="table-info-card p-3 border rounded">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0 text-muted">
+                <i class="fas fa-user-tie me-2"></i>Coaches
+            </h6>
+            <span class="badge bg-secondary">180 rows</span>
+        </div>
+        <p class="text-muted small mb-0">Head coaches and coaching staff information</p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow h-100 nba-card">
+            <div class="card-header bg-gradient-primary py-3">
+                <h5 class="m-0 font-weight-bold text-white">
+                    <i class="fas fa-layer-group me-2"></i>
+                    Entity Framework Core
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-database fa-4x text-primary mb-3"></i>
+                    <p class="text-muted">Access NBA data using Entity Framework Core ORM with advanced querying capabilities and change tracking.</p>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-primary">Players</h6>
+                            <small class="text-muted">Advanced Queries</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-success">Teams</h6>
+                            <small class="text-muted">CRUD Operations</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-info">Games</h6>
+                            <small class="text-muted">Analytics</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="@(Url.Action("EfCore", "Admin"))" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Launch EF Core Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow h-100 nba-card">
+            <div class="card-header bg-gradient-info py-3">
+                <h5 class="m-0 font-weight-bold text-white">
+                    <i class="fas fa-bolt me-2"></i>
+                    Dapper
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-tachometer-alt fa-4x text-info mb-3"></i>
+                    <p class="text-muted">High-performance data access with raw SQL queries and micro-ORM capabilities for maximum speed.</p>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-primary">Fast Queries</h6>
+                            <small class="text-muted">Raw SQL</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-success">Performance</h6>
+                            <small class="text-muted">Optimized</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-mini">
+                            <h6 class="text-warning">Reports</h6>
+                            <small class="text-muted">Complex Data</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <a href="@(Url.Action("Dapper", "Admin"))" class="btn btn-info btn-lg">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Launch Dapper Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow nba-showcase">
+            <div class="card-header bg-gradient-warning py-3">
+                <h5 class="m-0 font-weight-bold text-dark">
+                    <i class="fas fa-trophy me-2"></i>
+                    NBA Data Management Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="feature-card text-center p-3">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h6 class="font-weight-bold">Player Management</h6>
+                            <p class="text-muted small">Complete CRUD operations for NBA players with statistics and career data</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="feature-card text-center p-3">
+                            <i class="fas fa-flag fa-3x text-success mb-3"></i>
+                            <h6 class="font-weight-bold">Team Operations</h6>
+                            <p class="text-muted small">Manage team rosters, standings, and performance metrics</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="feature-card text-center p-3">
+                            <i class="fas fa-gamepad fa-3x text-info mb-3"></i>
+                            <h6 class="font-weight-bold">Game Analytics</h6>
+                            <p class="text-muted small">Deep dive into game statistics and play-by-play analysis</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="feature-card text-center p-3">
+                            <i class="fas fa-chart-line fa-3x text-warning mb-3"></i>
+                            <h6 class="font-weight-bold">Performance Reports</h6>
+                            <p class="text-muted small">Generate comprehensive reports and data visualizations</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Getting Started
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Choose Your Data Access Method</h6>
+                            <p class="text-muted mb-2">Select between Entity Framework Core for ORM features or Dapper for high-performance queries.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-success"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Explore NBA Data</h6>
+                            <p class="text-muted mb-2">Access comprehensive NBA datasets including players, teams, games, and statistics.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-marker bg-info"></div>
+                        <div class="timeline-content">
+                            <h6 class="mb-1">Generate Reports</h6>
+                            <p class="text-muted mb-2">Create custom reports and visualizations based on your analysis needs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-cogs me-2"></i>
+                    System Status
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-circle text-success"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="font-weight-bold">Database Connection</div>
+                        <div class="text-muted">NBA Database Online</div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-success">Active</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-circle text-success"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="font-weight-bold">EF Core Services</div>
+                        <div class="text-muted">ORM Operations Ready</div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-success">Ready</span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-circle text-success"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="font-weight-bold">Dapper Services</div>
+                        <div class="text-muted">High-Performance Queries</div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="badge bg-success">Ready</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="card shadow mt-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-basketball-ball me-2"></i>
+                    NBA Quick Facts
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <div class="quick-stat">
+                            <h4 class="text-primary mb-1">30</h4>
+                            <small class="text-muted">NBA Teams</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <div class="quick-stat">
+                            <h4 class="text-success mb-1">82</h4>
+                            <small class="text-muted">Regular Season Games</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="quick-stat">
+                            <h4 class="text-info mb-1">15</h4>
+                            <small class="text-muted">Players per Team</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="quick-stat">
+                            <h4 class="text-warning mb-1">4</h4>
+                            <small class="text-muted">Playoff Rounds</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+

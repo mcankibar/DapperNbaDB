@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36121.58
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DapperKaggleProject", "DapperKaggleProject\DapperKaggleProject.csproj", "{C90843D3-B35F-4FFF-B898-C0364CF8DF0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenchmarkRunner", "BenchmarkRunner\BenchmarkRunner.csproj", "{BAC2A67B-E3E2-4AD1-ADA1-3CA9502AEA9E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C90843D3-B35F-4FFF-B898-C0364CF8DF0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C90843D3-B35F-4FFF-B898-C0364CF8DF0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C90843D3-B35F-4FFF-B898-C0364CF8DF0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C90843D3-B35F-4FFF-B898-C0364CF8DF0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAC2A67B-E3E2-4AD1-ADA1-3CA9502AEA9E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAC2A67B-E3E2-4AD1-ADA1-3CA9502AEA9E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAC2A67B-E3E2-4AD1-ADA1-3CA9502AEA9E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAC2A67B-E3E2-4AD1-ADA1-3CA9502AEA9E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D0D44FF-50F4-4B66-901C-1CD52249D145}
+	EndGlobalSection
+EndGlobal

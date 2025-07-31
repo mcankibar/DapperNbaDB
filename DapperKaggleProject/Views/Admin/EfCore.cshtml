@@ -1,0 +1,360 @@
+@{
+    ViewData["Title"] = "EF Core Operations";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="ef-core-container">
+    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-layer-group text-primary me-2"></i>
+            Entity Framework Core Operations
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">EF Core</li>
+            </ol>
+        </nav>
+    </div>
+
+    
+    <div class="row mb-4">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-left-primary shadow">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Player Management</h5>
+                        <p class="card-text">Manage NBA players using Entity Framework Core with full CRUD operations.</p>
+                        <button class="btn btn-primary" onclick="loadPlayers()">
+                            <i class="fas fa-eye me-2"></i>View Players
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-left-success shadow">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-flag fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Team Management</h5>
+                        <p class="card-text">Handle team data with EF Core including relationships and navigation properties.</p>
+                        <button class="btn btn-success" onclick="loadTeams()">
+                            <i class="fas fa-eye me-2"></i>View Teams
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100 border-left-info shadow">
+                <div class="card-body">
+                    <div class="text-center">
+                        <i class="fas fa-gamepad fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Game Statistics</h5>
+                        <p class="card-text">Analyze game data using EF Core's powerful querying capabilities.</p>
+                        <button class="btn btn-info" onclick="loadGameStats()">
+                            <i class="fas fa-chart-bar me-2"></i>View Stats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-table me-2"></i>
+                        EF Core Data Results
+                    </h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                             aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Export Options:</div>
+                            <a class="dropdown-item" href="#" onclick="exportToCSV()">
+                                <i class="fas fa-file-csv fa-sm fa-fw mr-2 text-gray-400"></i>
+                                CSV Export
+                            </a>
+                            <a class="dropdown-item" href="#" onclick="exportToJSON()">
+                                <i class="fas fa-file-code fa-sm fa-fw mr-2 text-gray-400"></i>
+                                JSON Export
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="efcore-results">
+                        <div class="text-center py-5">
+                            <i class="fas fa-database fa-3x text-gray-300 mb-3"></i>
+                            <p class="text-muted">Select an operation above to view EF Core results</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-stopwatch me-2"></i>
+                        Query Performance
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="performance-metrics">
+                        <div class="performance-item mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Last Query Execution Time:</span>
+                                <span id="execution-time" class="badge bg-primary">-- ms</span>
+                            </div>
+                        </div>
+                        <div class="performance-item mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Records Retrieved:</span>
+                                <span id="record-count" class="badge bg-success">--</span>
+                            </div>
+                        </div>
+                        <div class="performance-item mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span>Memory Usage:</span>
+                                <span id="memory-usage" class="badge bg-info">-- MB</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-code me-2"></i>
+                        Generated SQL
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="generated-sql">
+                        <pre class="bg-light p-3 rounded"><code id="sql-code">-- Generated SQL will appear here</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Sample data and functions for demonstration
+        function loadPlayers() {
+            showLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                const playersData = `
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>Is Active</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>406</td>
+                                    <td>Shaquille O'Neal</td>
+                                    <td>Shaquille</td>
+                                    <td>O'Neal</td>
+                                    <td><span class="badge bg-danger">Retired</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2544</td>
+                                    <td>LeBron James</td>
+                                    <td>LeBron</td>
+                                    <td>James</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>708</td>
+                                    <td>Kobe Bryant</td>
+                                    <td>Kobe</td>
+                                    <td>Bryant</td>
+                                    <td><span class="badge bg-danger">Retired</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                document.getElementById('efcore-results').innerHTML = playersData;
+                updatePerformanceMetrics(250, 3, 2.1);
+                updateGeneratedSQL('SELECT * FROM Players ORDER BY FullName');
+                hideLoading();
+            }, 1500);
+        }
+
+        function loadTeams() {
+            showLoading();
+            
+            setTimeout(() => {
+                const teamsData = `
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-success">
+                                <tr>
+                                    <th>Team ID</th>
+                                    <th>Full Name</th>
+                                    <th>Abbreviation</th>
+                                    <th>City</th>
+                                    <th>State</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1610612747</td>
+                                    <td>Los Angeles Lakers</td>
+                                    <td>LAL</td>
+                                    <td>Los Angeles</td>
+                                    <td>CA</td>
+                                </tr>
+                                <tr>
+                                    <td>1610612738</td>
+                                    <td>Boston Celtics</td>
+                                    <td>BOS</td>
+                                    <td>Boston</td>
+                                    <td>MA</td>
+                                </tr>
+                                <tr>
+                                    <td>1610612744</td>
+                                    <td>Golden State Warriors</td>
+                                    <td>GSW</td>
+                                    <td>San Francisco</td>
+                                    <td>CA</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                document.getElementById('efcore-results').innerHTML = teamsData;
+                updatePerformanceMetrics(180, 30, 1.8);
+                updateGeneratedSQL('SELECT * FROM Teams WHERE IsActive = 1 ORDER BY FullName');
+                hideLoading();
+            }, 1200);
+        }
+
+        function loadGameStats() {
+            showLoading();
+            
+            setTimeout(() => {
+                const statsData = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="gamesChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stats-summary">
+                                <div class="stat-item mb-3">
+                                    <h5>Total Games: <span class="text-primary">1,230</span></h5>
+                                </div>
+                                <div class="stat-item mb-3">
+                                    <h5>Average Score: <span class="text-success">108.5</span></h5>
+                                </div>
+                                <div class="stat-item mb-3">
+                                    <h5>Highest Scoring Game: <span class="text-warning">186-184</span></h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('efcore-results').innerHTML = statsData;
+                updatePerformanceMetrics(450, 1230, 5.2);
+                updateGeneratedSQL(`
+                    SELECT 
+                        COUNT(*) as TotalGames,
+                        AVG(HomeScore + AwayScore) as AverageScore,
+                        MAX(HomeScore + AwayScore) as HighestScore
+                    FROM Games 
+                    WHERE Season = 2023
+                `);
+                hideLoading();
+                
+                // Create chart
+                setTimeout(() => {
+                    const ctx = document.getElementById('gamesChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Home Wins', 'Away Wins'],
+                            datasets: [{
+                                data: [615, 615],
+                                backgroundColor: ['#dc3545', '#0d6efd']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }
+                    });
+                }, 100);
+            }, 1800);
+        }
+
+        function updatePerformanceMetrics(executionTime, recordCount, memoryUsage) {
+            document.getElementById('execution-time').textContent = executionTime + ' ms';
+            document.getElementById('record-count').textContent = recordCount.toLocaleString();
+            document.getElementById('memory-usage').textContent = memoryUsage + ' MB';
+        }
+
+        function updateGeneratedSQL(sql) {
+            document.getElementById('sql-code').textContent = sql;
+        }
+
+        function exportToCSV() {
+            alert('CSV export functionality would be implemented here');
+        }
+
+        function exportToJSON() {
+            alert('JSON export functionality would be implemented here');
+        }
+
+        function showLoading() {
+            document.getElementById('efcore-results').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-3x text-primary mb-3"></i>
+                    <p class="text-muted">Loading EF Core data...</p>
+                </div>
+            `;
+        }
+
+        function hideLoading() {
+            // Loading will be replaced by actual content
+        }
+    </script>
+}
+

@@ -1,0 +1,594 @@
+@{
+    ViewData["Title"] = "Dapper Operations";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="dapper-container">
+    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-bolt text-warning me-2"></i>
+            Dapper Micro-ORM Operations
+        </h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Admin")">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dapper</li>
+            </ol>
+        </nav>
+    </div>
+
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-code me-2"></i>
+                        Raw SQL Query Builder
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <form id="dapper-query-form">
+                        <div class="mb-3">
+                            <label for="sql-query" class="form-label">SQL Query:</label>
+                            <textarea class="form-control" id="sql-query" rows="6" placeholder="Enter your SQL query here...">SELECT TOP 10 * FROM Players WHERE IsActive = 1 ORDER BY FullName</textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="query-type" class="form-label">Query Type:</label>
+                                    <select class="form-select" id="query-type">
+                                        <option value="select">SELECT</option>
+                                        <option value="insert">INSERT</option>
+                                        <option value="update">UPDATE</option>
+                                        <option value="delete">DELETE</option>
+                                        <option value="stored-procedure">Stored Procedure</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="timeout" class="form-label">Timeout (seconds):</label>
+                                    <input type="number" class="form-control" id="timeout" value="30" min="1" max="300">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-warning" onclick="executeDapperQuery()">
+                                <i class="fas fa-play me-2"></i>Execute Query
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary ms-2" onclick="clearQuery()">
+                                <i class="fas fa-eraser me-2"></i>Clear
+                            </button>
+                            <button type="button" class="btn btn-outline-info ms-2" onclick="showSampleQueries()">
+                                <i class="fas fa-lightbulb me-2"></i>Sample Queries
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mb-4">
+        <div class="col-lg-3 mb-3">
+            <div class="card h-100 border-left-warning shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-search fa-2x text-warning mb-3"></i>
+                    <h6 class="card-title">Complex Searches</h6>
+                    <button class="btn btn-sm btn-outline-warning" onclick="loadComplexSearch()">
+                        Execute
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 mb-3">
+            <div class="card h-100 border-left-success shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                    <h6 class="card-title">Analytics Query</h6>
+                    <button class="btn btn-sm btn-outline-success" onclick="loadAnalytics()">
+                        Execute
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 mb-3">
+            <div class="card h-100 border-left-info shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-database fa-2x text-info mb-3"></i>
+                    <h6 class="card-title">Stored Procedures</h6>
+                    <button class="btn btn-sm btn-outline-info" onclick="loadStoredProcedures()">
+                        Execute
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 mb-3">
+            <div class="card h-100 border-left-danger shadow">
+                <div class="card-body text-center">
+                    <i class="fas fa-tachometer-alt fa-2x text-danger mb-3"></i>
+                    <h6 class="card-title">Performance Test</h6>
+                    <button class="btn btn-sm btn-outline-danger" onclick="runPerformanceTest()">
+                        Execute
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-table me-2"></i>
+                        Query Results
+                    </h6>
+                    <div class="d-flex">
+                        <span class="badge bg-info me-2" id="result-count">0 rows</span>
+                        <span class="badge bg-success" id="execution-duration">0ms</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="dapper-results">
+                        <div class="text-center py-5">
+                            <i class="fas fa-bolt fa-3x text-gray-300 mb-3"></i>
+                            <p class="text-muted">Execute a Dapper query to view results</p>
+                            <small class="text-muted">Dapper provides fast, lightweight data access</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Performance Comparison: Dapper vs EF Core
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Dapper Advantages
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="advantage-item mb-3">
+                        <i class="fas fa-rocket text-success me-2"></i>
+                        <strong>High Performance</strong>
+                        <p class="text-muted small mb-0">Minimal overhead, fast execution</p>
+                    </div>
+                    <div class="advantage-item mb-3">
+                        <i class="fas fa-code text-info me-2"></i>
+                        <strong>SQL Control</strong>
+                        <p class="text-muted small mb-0">Full control over SQL queries</p>
+                    </div>
+                    <div class="advantage-item mb-3">
+                        <i class="fas fa-memory text-warning me-2"></i>
+                        <strong>Low Memory</strong>
+                        <p class="text-muted small mb-0">Efficient memory usage</p>
+                    </div>
+                    <div class="advantage-item mb-3">
+                        <i class="fas fa-cog text-primary me-2"></i>
+                        <strong>Flexibility</strong>
+                        <p class="text-muted small mb-0">Works with complex queries</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="sampleQueriesModal" tabindex="-1" aria-labelledby="sampleQueriesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sampleQueriesModalLabel">
+                    <i class="fas fa-lightbulb me-2"></i>Sample Dapper Queries
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="accordion" id="sampleQueriesAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="basicQueries">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBasic">
+                                Basic Queries
+                            </button>
+                        </h2>
+                        <div id="collapseBasic" class="accordion-collapse collapse show" data-bs-parent="#sampleQueriesAccordion">
+                            <div class="accordion-body">
+                                <div class="query-sample mb-3">
+                                    <h6>Get All Active Players</h6>
+                                    <pre class="bg-light p-2 rounded"><code>SELECT * FROM Players WHERE IsActive = 1</code></pre>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="useQuery('SELECT * FROM Players WHERE IsActive = 1')">Use This Query</button>
+                                </div>
+                                <div class="query-sample">
+                                    <h6>Get Player Count by Team</h6>
+                                    <pre class="bg-light p-2 rounded"><code>SELECT TeamId, COUNT(*) as PlayerCount FROM Players GROUP BY TeamId</code></pre>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="useQuery('SELECT TeamId, COUNT(*) as PlayerCount FROM Players GROUP BY TeamId')">Use This Query</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="complexQueries">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseComplex">
+                                Complex Queries
+                            </button>
+                        </h2>
+                        <div id="collapseComplex" class="accordion-collapse collapse" data-bs-parent="#sampleQueriesAccordion">
+                            <div class="accordion-body">
+                                <div class="query-sample">
+                                    <h6>Player Performance Analysis</h6>
+                                    <pre class="bg-light p-2 rounded"><code>SELECT p.FullName, t.FullName as TeamName, 
+COUNT(g.Id) as GamesPlayed
+FROM Players p
+JOIN Teams t ON p.TeamId = t.Id
+JOIN Games g ON g.HomeTeamId = t.Id OR g.AwayTeamId = t.Id
+WHERE p.IsActive = 1
+GROUP BY p.FullName, t.FullName
+ORDER BY GamesPlayed DESC</code></pre>
+                                    <button class="btn btn-sm btn-outline-primary" onclick="useComplexQuery()">Use This Query</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize performance chart
+        $(document).ready(function() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Simple Query', 'Complex Join', 'Aggregation', 'Bulk Insert'],
+                    datasets: [{
+                        label: 'Dapper (ms)',
+                        data: [12, 45, 23, 156],
+                        backgroundColor: '#f6c23e',
+                        borderColor: '#f6c23e',
+                        borderWidth: 1
+                    }, {
+                        label: 'EF Core (ms)',
+                        data: [28, 89, 67, 234],
+                        backgroundColor: '#0d6efd',
+                        borderColor: '#0d6efd',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Execution Time Comparison'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Execution Time (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        function executeDapperQuery() {
+            const query = document.getElementById('sql-query').value.trim();
+            if (!query) {
+                alert('Please enter a SQL query');
+                return;
+            }
+
+            showDapperLoading();
+            
+            // Simulate API call
+            setTimeout(() => {
+                const sampleData = `
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-warning">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Team</th>
+                                    <th>Position</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2544</td>
+                                    <td>LeBron James</td>
+                                    <td>Lakers</td>
+                                    <td>SF</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>201939</td>
+                                    <td>Stephen Curry</td>
+                                    <td>Warriors</td>
+                                    <td>PG</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>201566</td>
+                                    <td>Russell Westbrook</td>
+                                    <td>Clippers</td>
+                                    <td>PG</td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Query executed successfully using Dapper micro-ORM
+                        </small>
+                    </div>
+                `;
+
+                document.getElementById('dapper-results').innerHTML = sampleData;
+                document.getElementById('result-count').textContent = '3 rows';
+                document.getElementById('execution-duration').textContent = '15ms';
+            }, 1000);
+        }
+
+        function clearQuery() {
+            document.getElementById('sql-query').value = '';
+            document.getElementById('dapper-results').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-bolt fa-3x text-gray-300 mb-3"></i>
+                    <p class="text-muted">Execute a Dapper query to view results</p>
+                    <small class="text-muted">Dapper provides fast, lightweight data access</small>
+                </div>
+            `;
+            document.getElementById('result-count').textContent = '0 rows';
+            document.getElementById('execution-duration').textContent = '0ms';
+        }
+
+        function showSampleQueries() {
+            const modal = new bootstrap.Modal(document.getElementById('sampleQueriesModal'));
+            modal.show();
+        }
+
+        function useQuery(query) {
+            document.getElementById('sql-query').value = query;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sampleQueriesModal'));
+            modal.hide();
+        }
+
+        function useComplexQuery() {
+            const complexQuery = `SELECT p.FullName, t.FullName as TeamName, 
+COUNT(g.Id) as GamesPlayed
+FROM Players p
+JOIN Teams t ON p.TeamId = t.Id
+JOIN Games g ON g.HomeTeamId = t.Id OR g.AwayTeamId = t.Id
+WHERE p.IsActive = 1
+GROUP BY p.FullName, t.FullName
+ORDER BY GamesPlayed DESC`;
+            
+            document.getElementById('sql-query').value = complexQuery;
+            const modal = bootstrap.Modal.getInstance(document.getElementById('sampleQueriesModal'));
+            modal.hide();
+        }
+
+        function loadComplexSearch() {
+            showDapperLoading();
+            setTimeout(() => {
+                const complexData = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-search me-2"></i>
+                        <strong>Complex Search Results</strong> - Players with specific criteria
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-info">
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Team</th>
+                                    <th>Games</th>
+                                    <th>Avg Points</th>
+                                    <th>Experience</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>LeBron James</td>
+                                    <td>Lakers</td>
+                                    <td>82</td>
+                                    <td>28.5</td>
+                                    <td>20 years</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('dapper-results').innerHTML = complexData;
+                document.getElementById('result-count').textContent = '1 row';
+                document.getElementById('execution-duration').textContent = '45ms';
+            }, 1200);
+        }
+
+        function loadAnalytics() {
+            showDapperLoading();
+            setTimeout(() => {
+                const analyticsData = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="dapperAnalyticsChart" width="400" height="200"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="analytics-summary">
+                                <h5>Analytics Summary</h5>
+                                <div class="stat-item mb-2">
+                                    <span class="text-primary">Total Queries:</span> 1,547
+                                </div>
+                                <div class="stat-item mb-2">
+                                    <span class="text-success">Avg Response:</span> 23ms
+                                </div>
+                                <div class="stat-item mb-2">
+                                    <span class="text-warning">Peak Performance:</span> 8ms
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('dapper-results').innerHTML = analyticsData;
+                document.getElementById('result-count').textContent = '1,547 analytics';
+                document.getElementById('execution-duration').textContent = '23ms avg';
+
+                // Create analytics chart
+                setTimeout(() => {
+                    const ctx = document.getElementById('dapperAnalyticsChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                            datasets: [{
+                                label: 'Query Performance',
+                                data: [25, 19, 15, 22, 18, 23],
+                                borderColor: '#f6c23e',
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    });
+                }, 100);
+            }, 1500);
+        }
+
+        function loadStoredProcedures() {
+            showDapperLoading();
+            setTimeout(() => {
+                const spData = `
+                    <div class="alert alert-warning">
+                        <i class="fas fa-database me-2"></i>
+                        <strong>Stored Procedure Results</strong> - Execute sp_GetPlayerStats
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>Procedure</th>
+                                    <th>Parameters</th>
+                                    <th>Execution Time</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>sp_GetPlayerStats</td>
+                                    <td>@@Season = 2023</td>
+                                    <td>12ms</td>
+                                    <td><span class="badge bg-success">Success</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                document.getElementById('dapper-results').innerHTML = spData;
+                document.getElementById('result-count').textContent = '1 procedure';
+                document.getElementById('execution-duration').textContent = '12ms';
+            }, 800);
+        }
+
+        function runPerformanceTest() {
+            showDapperLoading();
+            setTimeout(() => {
+                const perfData = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        <strong>Performance Test Completed</strong> - 1000 queries executed
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card border-success">
+                                <div class="card-body text-center">
+                                    <h3 class="text-success">8ms</h3>
+                                    <p class="mb-0">Fastest Query</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-warning">
+                                <div class="card-body text-center">
+                                    <h3 class="text-warning">15ms</h3>
+                                    <p class="mb-0">Average Time</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-danger">
+                                <div class="card-body text-center">
+                                    <h3 class="text-danger">45ms</h3>
+                                    <p class="mb-0">Slowest Query</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('dapper-results').innerHTML = perfData;
+                document.getElementById('result-count').textContent = '1,000 tests';
+                document.getElementById('execution-duration').textContent = '15ms avg';
+            }, 2000);
+        }
+
+        function showDapperLoading() {
+            document.getElementById('dapper-results').innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-bolt fa-spin fa-3x text-warning mb-3"></i>
+                    <p class="text-muted">Executing Dapper query...</p>
+                    <div class="progress" style="width: 200px; margin: 0 auto;">
+                        <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+}
+

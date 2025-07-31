@@ -1,0 +1,425 @@
+@model DapperKaggleProject.DTOS.TeamsDTOS.TeamDetailDTO
+
+@{
+    ViewData["Title"] = $"{Model.FullName} - Team Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="team-details-header mb-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <img src="@Model.LogoPath" alt="@Model.Abbreviation Logo" class="team-logo-xl me-4" />
+                    <div>
+                        <h1 class="team-details-title mb-0">@Model.FullName</h1>
+                        <p class="team-details-subtitle text-muted">@Model.Nickname • @Model.City, @Model.State</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="@Url.Action("Teams", "Admin")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Teams
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row g-4">
+        
+        <div class="col-xl-4 col-lg-6">
+            <div class="card team-info-card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Team Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="team-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Abbreviation:</span>
+                            <span class="info-value">@Model.Abbreviation</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Founded:</span>
+                            <span class="info-value">@Model.YearFounded</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Arena:</span>
+                            <span class="info-value">@Model.Arena</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Capacity:</span>
+                            <span class="info-value">@Model.ArenaCapacity?.ToString("N0")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Owner:</span>
+                            <span class="info-value">@Model.Owner</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">General Manager:</span>
+                            <span class="info-value">@Model.GeneralManager</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Head Coach:</span>
+                            <span class="info-value">@Model.HeadCoach</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.DLeagueAffiliation))
+                        {
+                            <div class="info-item">
+                                <span class="info-label">D-League Affiliation:</span>
+                                <span class="info-value">@Model.DLeagueAffiliation</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-xl-4 col-lg-6">
+            <div class="card social-media-card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-share-alt me-2"></i>Social Media
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="social-links">
+                        @if (!string.IsNullOrEmpty(Model.Facebook))
+                        {
+                            <a href="@Model.Facebook" target="_blank" class="social-link facebook-link">
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Twitter))
+                        {
+                            <a href="@Model.Twitter" target="_blank" class="social-link twitter-link">
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                            </a>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Instagram))
+                        {
+                            <a href="@Model.Instagram" target="_blank" class="social-link instagram-link">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-xl-4 col-12">
+            <div class="card games-calendar-card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Games Calendar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="gamesCalendar" class="games-calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    @if (Model.RecentGames != null && Model.RecentGames.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card recent-games-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-history me-2"></i>Recent Games (Last @Model.RecentGames.Count)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="recent-games-list">
+                            @foreach (var game in Model.RecentGames)
+                            {
+                                <div class="game-item">
+                                    <div class="game-date">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        @game.GameDate.ToString("MMM dd, yyyy")
+                                    </div>
+                                    <div class="game-matchup">
+                                        <div class="team @(game.IsHomeGame(Model.TeamId) ? "home-team" : "away-team")">
+                                            <img src="/logos/@(game.HomeTeamAbbreviation.ToLower()).png" 
+                                                 alt="@game.HomeTeamAbbreviation" class="team-logo-sm" />
+                                            <span class="team-abbr">@game.HomeTeamAbbreviation</span>
+                                            <span class="team-score">@game.PtsHome</span>
+                                        </div>
+                                        <div class="vs-separator">vs</div>
+                                        <div class="team @(!game.IsHomeGame(Model.TeamId) ? "home-team" : "away-team")">
+                                            <img src="/logos/@(game.VisitorTeamAbbreviation.ToLower()).png" 
+                                                 alt="@game.VisitorTeamAbbreviation" class="team-logo-sm" />
+                                            <span class="team-abbr">@game.VisitorTeamAbbreviation</span>
+                                            <span class="team-score">@game.PtsAway</span>
+                                        </div>
+                                    </div>
+                                    <div class="game-result">
+                                        <span class="result-badge @(game.GetResult(Model.TeamId) == "W" ? "win" : "loss")">
+                                            @game.GetResult(Model.TeamId)
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .team-details-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        color: white;
+        padding: 2rem 0;
+        border-radius: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .team-logo-xl {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+    }
+
+    .team-details-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .team-details-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.8;
+    }
+
+    .team-info-card, .social-media-card, .games-calendar-card, .recent-games-card {
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+    }
+
+    .card-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+
+    .team-info-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .info-value {
+        font-weight: 500;
+        text-align: right;
+    }
+
+    .social-links {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .social-link {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .social-link i {
+        width: 20px;
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+    }
+
+    .facebook-link {
+        background: #f8f9fa;
+        color: #1877f2;
+    }
+
+    .facebook-link:hover {
+        background: #1877f2;
+        color: white;
+    }
+
+    .twitter-link {
+        background: #f8f9fa;
+        color: #1da1f2;
+    }
+
+    .twitter-link:hover {
+        background: #1da1f2;
+        color: white;
+    }
+
+    .instagram-link {
+        background: #f8f9fa;
+        color: #e4405f;
+    }
+
+    .instagram-link:hover {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+        color: white;
+    }
+
+    .games-calendar {
+        min-height: 200px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #6c757d;
+    }
+
+    .recent-games-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .game-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border: 1px solid #e9ecef;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .game-item:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .game-date {
+        font-weight: 600;
+        color: #495057;
+        min-width: 120px;
+    }
+
+    .game-matchup {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+        justify-content: center;
+    }
+
+    .team {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .team-logo-sm {
+        width: 30px;
+        height: 30px;
+        object-fit: contain;
+    }
+
+    .team-abbr {
+        font-weight: 600;
+        min-width: 40px;
+    }
+
+    .team-score {
+        font-weight: 700;
+        font-size: 1.1rem;
+        min-width: 30px;
+        text-align: center;
+    }
+
+    .vs-separator {
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .game-result {
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .result-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+    }
+
+    .result-badge.win {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .result-badge.loss {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize games calendar
+        initializeGamesCalendar();
+    });
+
+    function initializeGamesCalendar() {
+        const calendarElement = document.getElementById('gamesCalendar');
+        
+        // Simple calendar placeholder for now
+        calendarElement.innerHTML = `
+            <div class="text-center">
+                <i class="fas fa-calendar-alt fa-3x mb-3 text-muted"></i>
+                <p class="mb-0">Games Calendar</p>
+                <small class="text-muted">Calendar integration coming soon</small>
+            </div>
+        `;
+        
+        // TODO: Integrate with a proper calendar library like FullCalendar
+        // and populate with team's game schedule
+    }
+</script>
+

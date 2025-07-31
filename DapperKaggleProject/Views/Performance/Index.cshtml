@@ -1,0 +1,319 @@
+@{
+    ViewData["Title"] = "Performance Comparison";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">
+        <i class="fas fa-chart-line text-warning me-2"></i>
+        Performans Karşılaştırması
+    </h2>
+    <div class="btn-group" role="group">
+        <button type="button" class="btn btn-primary" onclick="runBasicTests()">
+            <i class="fas fa-play me-1"></i>Temel Testler
+        </button>
+        <button type="button" class="btn btn-info" onclick="runLargeDataTests()">
+            <i class="fas fa-database me-1"></i>Büyük Veri Testleri
+        </button>
+        <button type="button" class="btn btn-success" onclick="runAllTests()">
+            <i class="fas fa-rocket me-1"></i>Tüm Testler
+        </button>
+    </div>
+</div>
+
+
+<div id="testStatus" class="alert alert-info d-none">
+    <i class="fas fa-spinner fa-spin me-2"></i>
+    <span id="statusMessage">Testler çalışıyor...</span>
+</div>
+
+
+<div id="resultsContainer" class="d-none">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h3 id="efCoreWins">0</h3>
+                    <p class="mb-0">EF Core Kazandı</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h3 id="dapperWins">0</h3>
+                    <p class="mb-0">Dapper Kazandı</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h3 id="totalTests">0</h3>
+                    <p class="mb-0">Toplam Test</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-chart-bar me-2"></i>
+                Detaylı Test Sonuçları
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped" id="resultsTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Test Adı</th>
+                            <th>EF Core (ms)</th>
+                            <th>Dapper (ms)</th>
+                            <th>Kayıt Sayısı</th>
+                            <th>Kazanan</th>
+                            <th>Fark (ms)</th>
+                            <th>Performans Oranı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-chart-line me-2"></i>
+                Performans Grafiği
+            </h5>
+        </div>
+        <div class="card-body">
+            <canvas id="performanceChart" style="height: 400px;"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let performanceChart = null;
+
+        function showStatus(message) {
+            $('#statusMessage').text(message);
+            $('#testStatus').removeClass('d-none');
+            $('#resultsContainer').addClass('d-none');
+        }
+
+        function hideStatus() {
+            $('#testStatus').addClass('d-none');
+        }
+
+        function runBasicTests() {
+            showStatus('Temel testler çalışıyor...');
+            
+            $.post('/Performance/RunBasicTests')
+                .done(function(response) {
+                    hideStatus();
+                    if (response.success) {
+                        displayResults(response.results);
+                    } else {
+                        alert('Hata: ' + response.error);
+                    }
+                })
+                .fail(function() {
+                    hideStatus();
+                    alert('Test çalıştırılırken hata oluştu.');
+                });
+        }
+
+        function runLargeDataTests() {
+            showStatus('Büyük veri testleri çalışıyor...');
+            
+            $.post('/Performance/RunLargeDataTests')
+                .done(function(response) {
+                    hideStatus();
+                    if (response.success) {
+                        displayResults(response.results);
+                    } else {
+                        alert('Hata: ' + response.error);
+                    }
+                })
+                .fail(function() {
+                    hideStatus();
+                    alert('Test çalıştırılırken hata oluştu.');
+                });
+        }
+
+        function runAllTests() {
+            showStatus('Tüm testler çalışıyor... Bu biraz zaman alabilir.');
+            
+            $.post('/Performance/RunTests')
+                .done(function(response) {
+                    hideStatus();
+                    if (response.success) {
+                        displayResults(response.results);
+                    } else {
+                        alert('Hata: ' + response.error);
+                    }
+                })
+                .fail(function() {
+                    hideStatus();
+                    alert('Test çalıştırılırken hata oluştu.');
+                });
+        }
+
+        function displayResults(results) {
+            if (!results || results.length === 0) {
+                alert('Test sonucu bulunamadı.');
+                return;
+            }
+
+            // Update summary cards
+            let efCoreWins = 0;
+            let dapperWins = 0;
+            
+            results.forEach(result => {
+                if (result.winner === 'EF Core') efCoreWins++;
+                else if (result.winner === 'Dapper') dapperWins++;
+            });
+
+            $('#efCoreWins').text(efCoreWins);
+            $('#dapperWins').text(dapperWins);
+            $('#totalTests').text(results.length);
+
+            // Populate table
+            const tbody = $('#resultsTable tbody');
+            tbody.empty();
+
+            results.forEach(result => {
+                const winnerClass = result.winner === 'EF Core' ? 'text-primary' : 'text-danger';
+                const performanceRatio = result.performanceRatio.toFixed(2);
+                
+                const row = `
+                    <tr>
+                        <td>${result.testName}</td>
+                        <td>${result.efCoreTimeMs}</td>
+                        <td>${result.dapperTimeMs}</td>
+                        <td>${result.recordCount.toLocaleString()}</td>
+                        <td class="${winnerClass}"><strong>${result.winner}</strong></td>
+                        <td>${result.timeDifferenceMs}</td>
+                        <td>${performanceRatio}x</td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+
+            // Create chart
+            createPerformanceChart(results);
+
+            // Show results
+            $('#resultsContainer').removeClass('d-none');
+        }
+
+        function createPerformanceChart(results) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (performanceChart) {
+                performanceChart.destroy();
+            }
+
+            const labels = results.map(r => r.testName);
+            const efCoreData = results.map(r => r.efCoreTimeMs);
+            const dapperData = results.map(r => r.dapperTimeMs);
+
+            performanceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'EF Core (ms)',
+                        data: efCoreData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.8)',
+                        borderColor: 'rgb(13, 110, 253)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Dapper (ms)',
+                        data: dapperData,
+                        backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                        borderColor: 'rgb(220, 53, 69)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Süre (milisaniye)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Test Adı'
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'EF Core vs Dapper Performans Karşılaştırması'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+}
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-group .btn {
+        margin-right: 0;
+    }
+
+    .table-responsive {
+        border-radius: 0.375rem;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 0.5rem;
+    }
+
+    .text-primary {
+        color: #0d6efd !important;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    #performanceChart {
+        max-height: 400px;
+    }
+</style>
+

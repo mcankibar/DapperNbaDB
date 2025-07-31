@@ -1,0 +1,651 @@
+@model DapperKaggleProject.ViewModels.TeamDetailWithGamesViewModel
+@{
+    ViewData["Title"] = $"{Model.TeamDetail.FullName} - Team Calendar";
+    Layout = "_AdminLayout";
+}
+
+<div class="team-details-header mb-4">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <img src="@Model.TeamDetail.LogoPath" alt="@Model.TeamDetail.Abbreviation Logo" class="team-logo-xl me-4" />
+                    <div>
+                        <h1 class="team-details-title mb-0">@Model.TeamDetail.FullName</h1>
+                        <p class="team-details-subtitle text-muted">@Model.TeamDetail.Nickname • @Model.TeamDetail.City, @Model.TeamDetail.State</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="@Url.Action("Teams", "Admin")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Teams
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row g-4">
+        
+        <div class="col-xl-4 col-lg-5">
+            
+            <div class="card team-info-card h-100 mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Team Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="team-info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Abbreviation:</span>
+                            <span class="info-value">@Model.TeamDetail.Abbreviation</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Founded:</span>
+                            <span class="info-value">@Model.TeamDetail.YearFounded</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Arena:</span>
+                            <span class="info-value">@Model.TeamDetail.Arena</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Capacity:</span>
+                            <span class="info-value">@Model.TeamDetail.ArenaCapacity?.ToString("N0")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Owner:</span>
+                            <span class="info-value">@Model.TeamDetail.Owner</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">General Manager:</span>
+                            <span class="info-value">@Model.TeamDetail.GeneralManager</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Head Coach:</span>
+                            <span class="info-value">@Model.TeamDetail.HeadCoach</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.TeamDetail.DLeagueAffiliation))
+                        {
+                            <div class="info-item">
+                                <span class="info-label">D-League Affiliation:</span>
+                                <span class="info-value">@Model.TeamDetail.DLeagueAffiliation</span>
+                            </div>
+                        }
+                    </div>
+
+                    
+                    <div class="social-media-section mt-4">
+                        <h6 class="social-title">Follow @Model.TeamDetail.Nickname</h6>
+                        <div class="social-links">
+                            @if (!string.IsNullOrEmpty(Model.TeamDetail.Facebook))
+                            {
+                                <a href="@Model.TeamDetail.Facebook" target="_blank" class="social-link facebook-link">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.TeamDetail.Twitter))
+                            {
+                                <a href="@Model.TeamDetail.Twitter" target="_blank" class="social-link twitter-link">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.TeamDetail.Instagram))
+                            {
+                                <a href="@Model.TeamDetail.Instagram" target="_blank" class="social-link instagram-link">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="col-xl-8 col-lg-7">
+            <div class="card games-calendar-card h-100">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-calendar-alt me-2"></i>Games Calendar
+                        </h5>
+                        <div class="calendar-controls">
+                            
+                            <select class="form-select form-select-sm me-2" id="seasonTypeSelect" style="width: auto; display: inline-block;">
+                                <option value="All" selected="@(Model.SeasonType == "All" ? "selected" : null)">All Games</option>
+                                <option value="Regular Season" selected="@(Model.SeasonType == "Regular Season" ? "selected" : null)">Regular Season</option>
+                                <option value="Playoffs" selected="@(Model.SeasonType == "Playoffs" ? "selected" : null)">Playoffs</option>
+                                <option value="Preseason" selected="@(Model.SeasonType == "Preseason" ? "selected" : null)">Preseason</option>
+                            </select>
+                            
+                            
+                            <select class="form-select form-select-sm me-2" id="yearSelect" style="width: auto; display: inline-block;">
+                                @foreach (var year in Model.AvailableYears)
+                                {
+                                    <option value="@year" selected="@(year == Model.SelectedYear ? "selected" : null)">@year</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="calendar-header d-flex justify-content-between align-items-center mb-4">
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="prevMonth">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <h4 class="calendar-title mb-0">@Model.CalendarTitle</h4>
+                        <button type="button" class="btn btn-outline-primary btn-sm" id="nextMonth">
+                            <i class="fas fa-chevron-right"></i> Next
+                        </button>
+                    </div>
+
+                    
+                    <div class="modern-calendar">
+                        
+                        <div class="weekday-headers">
+                            <div class="weekday-header">SUN</div>
+                            <div class="weekday-header">MON</div>
+                            <div class="weekday-header">TUE</div>
+                            <div class="weekday-header">WED</div>
+                            <div class="weekday-header">THU</div>
+                            <div class="weekday-header">FRI</div>
+                            <div class="weekday-header">SAT</div>
+                        </div>
+
+                        
+                        <div class="calendar-cards-grid">
+                            @foreach (var week in Model.GetCalendarWeeks())
+                            {
+                                @foreach (var day in week)
+                                {
+                                    var isCurrentMonth = day.Month == Model.SelectedMonth;
+                                    var hasGames = Model.HasGamesOnDate(day);
+                                    var gamesOnDay = Model.GetGamesForDate(day);
+                                    var isToday = day.Date == DateTime.Today;
+
+                                    <div class="day-card @(isCurrentMonth ? "current-month" : "other-month") @(isToday ? "today" : "") @(hasGames ? "has-games" : "")">
+                                        <div class="day-header">
+                                            <span class="day-number">@day.Day</span>
+                                            @if (hasGames)
+                                            {
+                                                <span class="games-badge">@gamesOnDay.Count</span>
+                                            }
+                                        </div>
+                                        
+                                        <div class="day-content">
+                                            @if (hasGames)
+                                            {
+                                                @foreach (var game in gamesOnDay.Take(2))
+                                                {
+                                                    var opponent = game.GetOpponent(Model.TeamDetail.TeamId);
+                                                    var opponentLogoPath = $"/logos/{opponent.ToLower()}.png";
+                                                    var result = game.GetResult(Model.TeamDetail.TeamId);
+                                                    var teamScore = game.GetTeamScore(Model.TeamDetail.TeamId);
+                                                    var opponentScore = game.GetOpponentScore(Model.TeamDetail.TeamId);
+                                                    var isHomeGame = game.IsHomeGame(Model.TeamDetail.TeamId);
+                                                    var resultClass = "";
+                                                    
+                                                    if (teamScore.HasValue && opponentScore.HasValue)
+                                                    {
+                                                        resultClass = result == "W" ? "win" : "loss";
+                                                    }
+                                                    else
+                                                    {
+                                                        resultClass = "upcoming";
+                                                    }
+
+                                                    <div class="game-card @resultClass">
+                                                        <div class="game-header">
+                                                            <img src="@opponentLogoPath" alt="@opponent" class="opponent-logo" />
+                                                            <div class="game-meta">
+                                                                <span class="opponent">@opponent</span>
+                                                                <span class="location">@(isHomeGame ? "vs" : "@")</span>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="game-result">
+                                                            @if (teamScore.HasValue && opponentScore.HasValue)
+                                                            {
+                                                                <div class="score-display">
+                                                                    <span class="score">@((int)teamScore.Value)-@((int)opponentScore.Value)</span>
+                                                                    <span class="result-badge @(result.ToLower())">@result</span>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="game-time">
+                                                                    @game.GameDate.ToString("HH:mm")
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                }
+                                                
+                                                @if (gamesOnDay.Count > 2)
+                                                {
+                                                    <div class="more-games">
+                                                        <small class="text-muted">+@(gamesOnDay.Count - 2) more games</small>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="no-games">
+                                                    <i class="fas fa-calendar text-muted"></i>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h6>Games This Month</h6>
+                                    <div class="stat-number">@Model.GetGamesCountForMonth()</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h6>Current Season</h6>
+                                    <div class="stat-text">@Model.GetCurrentSeasonDisplay()</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stats-card">
+                                    <h6>Filter</h6>
+                                    <div class="stat-text">@Model.SeasonType</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    /* Main Calendar Container */
+    .modern-calendar {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Weekday Headers */
+    .weekday-headers {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0;
+    }
+
+    .weekday-header {
+        padding: 16px 8px;
+        text-align: center;
+        font-weight: 700;
+        color: white;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Calendar Cards Grid */
+    .calendar-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 2px;
+        background: #f8f9fa;
+        padding: 2px;
+    }
+
+    /* Individual Day Cards */
+    .day-card {
+        background: white;
+        min-height: 120px;
+        padding: 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        border: 2px solid transparent;
+    }
+
+    .day-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-color: #007bff;
+    }
+
+    .day-card.other-month {
+        background: #f8f9fa;
+        opacity: 0.6;
+    }
+
+    .day-card.today {
+        border-color: #28a745;
+        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+    }
+
+    .day-card.has-games {
+        border-left: 4px solid #007bff;
+    }
+
+    /* Day Header */
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .day-number {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #495057;
+    }
+
+    .games-badge {
+        background: #007bff;
+        color: white;
+        font-size: 0.75rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    /* Day Content */
+    .day-content {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        height: calc(100% - 32px);
+    }
+
+    /* Game Cards */
+    .game-card {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 8px;
+        border-left: 3px solid #dee2e6;
+        transition: all 0.2s ease;
+    }
+
+    .game-card.win {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border-left-color: #28a745;
+    }
+
+    .game-card.loss {
+        background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+        border-left-color: #dc3545;
+    }
+
+    .game-card.upcoming {
+        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+        border-left-color: #ffc107;
+    }
+
+    .game-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .opponent-logo {
+        width: 20px;
+        height: 20px;
+        object-fit: contain;
+        border-radius: 3px;
+    }
+
+    .game-meta {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .opponent {
+        font-weight: 600;
+        font-size: 0.75rem;
+        color: #495057;
+    }
+
+    .location {
+        font-size: 0.65rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    .game-result {
+        text-align: center;
+    }
+
+    .score-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .score {
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #495057;
+    }
+
+    .result-badge {
+        font-size: 0.65rem;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 700;
+    }
+
+    .result-badge.w {
+        background: #28a745;
+        color: white;
+    }
+
+    .result-badge.l {
+        background: #dc3545;
+        color: white;
+    }
+
+    .game-time {
+        font-size: 0.7rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+
+    .more-games {
+        text-align: center;
+        padding: 4px;
+    }
+
+    .no-games {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        opacity: 0.3;
+    }
+
+    /* Team Logo */
+    .team-logo-xl {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+    }
+
+    /* Info Grid */
+    .team-info-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .info-value {
+        color: #495057;
+        text-align: right;
+    }
+
+    /* Social Links */
+    .social-links {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .social-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: none;
+        transition: transform 0.2s;
+    }
+
+    .social-link:hover {
+        transform: scale(1.1);
+        color: white;
+    }
+
+    .facebook-link {
+        background-color: #1877f2;
+    }
+
+    .twitter-link {
+        background-color: #1da1f2;
+    }
+
+    .instagram-link {
+        background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        text-align: center;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.375rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .stats-card h6 {
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #495057;
+    }
+
+    .stat-text {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #007bff;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .calendar-cards-grid {
+            gap: 1px;
+        }
+        
+        .day-card {
+            min-height: 100px;
+            padding: 8px;
+        }
+        
+        .opponent-logo {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .opponent {
+            font-size: 0.7rem;
+        }
+        
+        .score {
+            font-size: 0.75rem;
+        }
+    }
+</style>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calendar navigation
+        document.getElementById('prevMonth')?.addEventListener('click', function() {
+            navigateToMonth(@Model.PreviousMonth.Month, @Model.PreviousMonth.Year);
+        });
+
+        document.getElementById('nextMonth')?.addEventListener('click', function() {
+            navigateToMonth(@Model.NextMonth.Month, @Model.NextMonth.Year);
+        });
+
+        // Year and season type changes
+        document.getElementById('yearSelect')?.addEventListener('change', function() {
+            navigateToMonth(@Model.SelectedMonth, this.value);
+        });
+
+        document.getElementById('seasonTypeSelect')?.addEventListener('change', function() {
+            navigateWithFilters(@Model.SelectedMonth, @Model.SelectedYear, this.value);
+        });
+
+        // Day card click events
+        document.querySelectorAll('.day-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const hasGames = this.classList.contains('has-games');
+                if (hasGames) {
+                    // Show games modal or expand day view
+                    console.log('Show games for this day');
+                }
+            });
+        });
+
+        function navigateToMonth(month, year) {
+            window.location.href = '@Url.Action("TeamDetails", "Admin")' + 
+                '?id=@Model.TeamDetail.TeamId&month=' + month + '&year=' + year + '&seasonType=@Model.SeasonType';
+        }
+
+        function navigateWithFilters(month, year, seasonType) {
+            window.location.href = '@Url.Action("TeamDetails", "Admin")' + 
+                '?id=@Model.TeamDetail.TeamId&month=' + month + '&year=' + year + '&seasonType=' + seasonType;
+        }
+    });
+</script>
+
